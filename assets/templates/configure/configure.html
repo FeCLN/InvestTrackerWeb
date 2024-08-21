@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block content %}
+{% if message %}
+    <p style="color: green;">{{ message }}</p>
+{% endif %}
+<form method="POST" action="{% url 'configure' %}">
+    {% csrf_token %}
+    <div> 
+        Ticker: <input type="text" name="ticker" value="{{ ticker }}">
+    </div>
+    
+    <div>
+        Interval (minutes) <input type="number" name="interval" value="{{ interval }}">
+    </div>
+    
+    <div>
+        Upper Limit <input type="text"  name="upperLimit" value="{{ upperLimit }}">
+    </div>
+
+    <div>
+        Lower Limit: <input type="text"  name="lowerLimit" value="{{ lowerLimit }}">
+    </div>
+    
+    <button type="submit">Save asset to your list</button>
+</form>
+
+{% endblock %}

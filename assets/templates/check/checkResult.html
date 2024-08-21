@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h2>DATA FOR YOUR CONFIGURE ASSET {{ ticker }}</h2>
+<p>Last data from: {{ data.name }}</p>
+<p>Last price: {{ data.Close }} BRL </p>
+<p>Volume: {{ data.Volume }}</p>
+{{ graph_html|safe }}
+
+{% endblock %}

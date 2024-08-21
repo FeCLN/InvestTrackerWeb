@@ -4,4 +4,5 @@
     <p>Last data from: {{ data.name }}</p>
     <p>Last price: {{ data.Close }} BRL </p>
     <p>Volume: {{ data.Volume }}</p>
+    {{ graph_html|safe }}
 {% endblock %}
