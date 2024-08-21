@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block content %}
+<form method="post">
+    {% csrf_token %}
+    <label for="symbol">Input the asset ticker:</label>
+    <input type="text" id="ticker" name="ticker" required>
+    <button type="submit">Search</button>
+</form>
+{% endblock %}

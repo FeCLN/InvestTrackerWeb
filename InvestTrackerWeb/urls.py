@@ -19,11 +19,18 @@ from django.urls import path, include
 
 # Importar views:
 from coreApp import views as coreViews
+from assets import views as assetsViews
 from accounts import views as accViews
 
 urlpatterns = [ #rota, view, nome
     path('admin/', admin.site.urls),
     path('', coreViews.home,name='home'),
+
+
+    # ASSETS
+    path('configure/', assetsViews.configureAssets,name='configure'),
+    path('check/', assetsViews.checkAssets,name='check'),
+    path('search/', assetsViews.searchAssets,name='search'),
 
 
 
