@@ -76,10 +76,12 @@ def configureAssets(request):
     if request.method == 'POST':
 
         #GET INPUT DATA:
-        tickerB3 = request.POST.get('ticker')
-        interval = request.POST.get('interval')
+        tickerB3   = request.POST.get('ticker')
+        interval   = request.POST.get('interval')
         upperLimit = request.POST.get('upperLimit')
         lowerLimit = request.POST.get('lowerLimit')
+        tunnelType = request.POST.get('tunnelType')
+
 
         #CREATE NEW ASSET OBJECT
         newAsset = Asset()
@@ -93,6 +95,7 @@ def configureAssets(request):
             newAsset.interval   =     int(interval)
             newAsset.upperLimit = Decimal(upperLimit)
             newAsset.lowerLimit = Decimal(lowerLimit)
+            newAsset.tunnelType =         tunnelType
             newAsset.save()
 
             #CREATE SCHEDULE TASK

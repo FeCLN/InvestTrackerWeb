@@ -5,21 +5,41 @@
 {% endif %}
 <form method="POST" action="{% url 'configure' %}">
     {% csrf_token %}
-    <div> 
+    <br> 
+    <br> 
+    <div class="mb-3"> 
         Ticker: <input type="text" name="ticker" value="{{ ticker }}">
     </div>
+    <br> 
     
-    <div>
+    <div class="mb-3">
         Interval (minutes) <input type="number" name="interval" value="{{ interval }}">
     </div>
+    <br> 
     
-    <div>
+    <div class="mb-3">
         Upper Limit <input type="text"  name="upperLimit" value="{{ upperLimit }}">
+        <div>&emsp;&emsp;Obs: For static it's the absolute upper limit</div>
+        <div>&emsp;&emsp;Obs: For dynamic synchronous and asynchronous it's the relative upper limite (i.e. how much from the last price it can be higher)</div>
     </div>
+    <br> 
 
-    <div>
+    <div class="mb-3">
         Lower Limit: <input type="text"  name="lowerLimit" value="{{ lowerLimit }}">
+        <div>&emsp;&emsp;Obs: For static it's the absolute lower limit</div>
+        <div>&emsp;&emsp;Obs: For dynamic synchronous and asynchronous it's the relative lower limite (i.e. how much from the last price it can be higher)</div>
     </div>
+    <br> 
+
+    <div class="mb-3">
+        Tunnel type: 
+        <select name="tunnelType">
+            <option value="static" {% if tunnelType == 'static' %}selected{% endif %}>Static</option>
+            <option value="sync"   {% if tunnelType == 'sync' %}selected{% endif %}>Dynamic Synchronous</option>
+            <option value="async"  {% if tunnelType == 'async' %}selected{% endif %}>Dynamic Asynchronous (Calcualtion based on last day history)</option>
+        </select>
+    </div>
+    <br> 
     
     <button type="submit">Save asset to your list</button>
 </form>

@@ -1,6 +1,10 @@
 # InvestTrackerWeb
 Started
 
+python3 manage.py runserver
+celery -A InvestTrackerWeb beat --loglevel=info
+celery -A InvestTrackerWeb beat --loglevel=info
+
 Sources:
 https://getbootstrap.com/docs/5.0/getting-started/introduction/
 https://github.com/opencodigos/DjangoAutenticacaoSimples

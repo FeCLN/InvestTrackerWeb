@@ -7,6 +7,8 @@ class Asset(models.Model):
     interval = models.IntegerField()
     upperLimit = models.DecimalField(decimal_places=2, max_digits=6)
     lowerLimit = models.DecimalField(decimal_places=2, max_digits=6)
+    tunnelType = models.TextField(null=True) #static; async; sync
+
 
 class AssetHistory(models.Model):
     asset      = models.ForeignKey(Asset, on_delete=models.CASCADE)
