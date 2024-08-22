@@ -22,7 +22,8 @@ from coreApp import views as coreViews
 from assets import views as assetsViews
 from accounts import views as accViews
 
-urlpatterns = [ #rota, view, nome
+urlpatterns = [
+    # ADMIN, CORE, HOME
     path('admin/', admin.site.urls),
     path('', coreViews.home,name='home'),
 
@@ -33,7 +34,7 @@ urlpatterns = [ #rota, view, nome
     path('search/', assetsViews.searchAssets,name='search'),
 
 
-
+    # ACCOUNT MANAGER
     path("accounts/", include("django.contrib.auth.urls")),
     path('register/', accViews.register, name='register'),
 

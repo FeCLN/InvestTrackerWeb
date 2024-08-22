@@ -6,5 +6,6 @@
 <p>Last price: {{ data.Close }} BRL </p>
 <p>Volume: {{ data.Volume }}</p>
 {{ graph_html|safe }}
+{{ graph_history_html|safe }}
 
 {% endblock %}

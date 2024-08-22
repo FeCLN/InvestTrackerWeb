@@ -1,8 +1,13 @@
 from django.shortcuts import render
 import yfinance as yf
 import plotly.graph_objects as go
-from .models import Asset
+from django.http import HttpResponse
+from .models import Asset, AssetHistory
 from decimal import Decimal
+from django.utils import timezone
+from datetime import timedelta
+
+from django_celery_beat.models import PeriodicTask, IntervalSchedule
 
 ##########################################################################
 def checkAssets(request):
@@ -14,11 +19,40 @@ def checkAssets(request):
 
         graph_html, dataAsset = searchAsset(assetSelected.ticker)
 
+        # PLOT ASSET HISTORY
+
+        history = AssetHistory.objects.filter(asset=assetSelected).order_by('timestamp')[:500]
+        
+        timestamps   = [record.timestamp  for record in history]
+        open_prices  = [record.openPrice  for record in history]
+        high_prices  = [record.highPrice  for record in history]
+        low_prices   = [record.lowPrice   for record in history]
+        close_prices = [record.closePrice for record in history]
+
+        fig = go.Figure(data=[go.Candlestick(x=timestamps,
+                                            open=open_prices,
+                                            high=high_prices,
+                                            low=low_prices,
+                                            close=close_prices)])
+
+        fig.update_layout(
+            title=f'Last 500 values stored for {assetSelected.ticker}',
+            xaxis_title='Timestamp',
+            yaxis_title='Price',
+            xaxis_rangeslider_visible=False,
+            xaxis_tickformat='%Y-%m-%d %H:%M',
+            xaxis_title_standoff=10
+        )
+
+        graph_history_html = fig.to_html(full_html=False)
+
+
         if not dataAsset.empty:
             context = {
                 'ticker': assetSelected.ticker,
                 'data': dataAsset.iloc[-1],
-                'graph_html': graph_html
+                'graph_html': graph_html,
+                'graph_history_html': graph_history_html
             }
         else:
             context = {
@@ -41,21 +75,31 @@ def checkAssets(request):
 def configureAssets(request):
     if request.method == 'POST':
 
-        #Get data:
+        #GET INPUT DATA:
         tickerB3 = request.POST.get('ticker')
         interval = request.POST.get('interval')
         upperLimit = request.POST.get('upperLimit')
         lowerLimit = request.POST.get('lowerLimit')
 
+        #CREATE NEW ASSET OBJECT
         newAsset = Asset()
         newAsset.user = request.user
 
+        #CHECK IF DATA EXISTS
         if tickerB3 and interval and upperLimit and lowerLimit:
+
+            #SAVE NEW ASSET
             newAsset.ticker     =         tickerB3
             newAsset.interval   =     int(interval)
             newAsset.upperLimit = Decimal(upperLimit)
             newAsset.lowerLimit = Decimal(lowerLimit)
             newAsset.save()
+
+            #CREATE SCHEDULE TASK
+            interval, _ = IntervalSchedule.objects.get_or_create(every=newAsset.interval, period=IntervalSchedule.SECONDS)
+            PeriodicTask.objects.create(interval=interval, name=("schedule_" + tickerB3 + "_" + str(request.user.username)), task="assets.tasks.AssetChecker", args=[newAsset.id])
+
+            #RETURN TO PAGE
             context = {
             'current_page': 'configure',
             'message': 'Asset configured!',  

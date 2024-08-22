@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_celery_beat',
     'coreApp',
     'accounts',
     'assets',
@@ -137,3 +138,16 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
+
+
+
+# Configurações do Celery
+CELERY_BROKER_URL = 'redis://localhost:6379/0' 
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'  
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'America/Sao_Paulo'
+
+# Configurações do Django Celery Beat
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'

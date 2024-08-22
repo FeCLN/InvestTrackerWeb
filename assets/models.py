@@ -7,3 +7,13 @@ class Asset(models.Model):
     interval = models.IntegerField()
     upperLimit = models.DecimalField(decimal_places=2, max_digits=6)
     lowerLimit = models.DecimalField(decimal_places=2, max_digits=6)
+
+class AssetHistory(models.Model):
+    asset      = models.ForeignKey(Asset, on_delete=models.CASCADE)
+    timestamp  = models.TextField(null=True)
+    openPrice  = models.DecimalField(decimal_places=2, max_digits=6)
+    highPrice  = models.DecimalField(decimal_places=2, max_digits=6)
+    lowPrice   = models.DecimalField(decimal_places=2, max_digits=6)
+    closePrice = models.DecimalField(decimal_places=2, max_digits=6)
+
+
