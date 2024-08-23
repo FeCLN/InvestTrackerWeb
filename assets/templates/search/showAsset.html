@@ -1,8 +1,29 @@
 {% extends 'base.html' %}
 {% block content %}
-    <h2>DATA FOR {{ ticker }}</h2>
-    <p>Last data from: {{ data.name }}</p>
-    <p>Last price: {{ data.Close }} BRL </p>
-    <p>Volume: {{ data.Volume }}</p>
-    {{ graph_html|safe }}
+
+<div class="container mt-4">
+    <div class="card mb-4" style="background-color: #ebffeb; color: #303030 ;">
+        <div class="card-body">
+            <h3 class="text-center font-weight-bold" style="color:#303030; ;">Data from B3 for {{ ticker }}</h4>
+            <h4 class="text-center font-weight-bold" style="color:#c1c1c1; ;">last one day data with 1 minute update</h5>
+
+            <div class="row">
+                <div class="col-md-6 d-flex flex-column justify-content-center">
+                    <p class="h4 my-auto text-center" ><strong>Last data available</strong></p> 
+                    <p class="h4 my-auto" >Date-time:  <strong>{{ data.name }} </strong></p> 
+                    <p class="h4 my-auto" >Open price: <strong>{{ data.Open|floatformat:"2" }} BRL </strong></p>
+                    <p class="h4 my-auto" >High price: <strong>{{ data.High|floatformat:"2" }} BRL </strong></p>
+                    <p class="h4 my-auto" >Low price: <strong>{{ data.Low|floatformat:"2" }} BRL </strong></p>
+                    <p class="h4 my-auto" >Close price: <strong>{{ data.Close|floatformat:"2" }} BRL </strong></p>
+                    <p class="h4 my-auto" >Volume: <strong>{{ data.Volume }}</strong></p>
+                </div>
+                <div class="col-md-6">
+                    {{ graph_html|safe }}
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+    
 {% endblock %}

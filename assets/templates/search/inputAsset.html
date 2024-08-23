@@ -1,9 +1,22 @@
 {% extends 'base.html' %}
 {% block content %}
-<form method="post">
-    {% csrf_token %}
-    <label for="symbol">Input the asset ticker:</label>
-    <input type="text" id="ticker" name="ticker" required>
-    <button type="submit">Search</button>
-</form>
+
+    
+<div class="container mt-4">
+    <div class="card mb-4" style="background-color: #daff99; color: #315030;">
+        <div class="card-body">
+            <h4 class="text-center font-weight-bold" style="color:#315030; ;">Asset Search</h4>
+                <form method="post">
+                {% csrf_token %}
+                    <div class="mt-4">
+                        <input type="text" class="form-control" id="ticker" name="ticker" placeholder="Insert the asset ticker (e.g. PETR4)">
+                    </div>
+                    <div class="mt-4">
+                        <button class="btn mx-auto d-block" style="background-color: #f3f3f3; color: #315030; border: none;">Search</button>
+                    </div>
+                </form>
+        </div>
+    </div>
+</div>
+
 {% endblock %}

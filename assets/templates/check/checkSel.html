@@ -1,16 +1,25 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<form method="POST" action="{% url 'check' %}">
-    {% csrf_token %}
-    Select an asset: 
-    <select id="asset" name="asset">
-        {% for asset in assets %}
-            <option value="{{ asset.id}}">{{ asset.ticker }}</option>
-        {% endfor %}
-    </select> 
 
-    <button type="submit">Search asset</button>
-</form>
+
+<div class="container mt-4">
+    <div class="card mb-4" style="background-color: #daff99; color: #315030;">
+        <div class="card-body">
+            <h4 class="text-center font-weight-bold" style="color:#315030; ;">Select your saved asset: </h4>
+                <form method="POST" action="{% url 'check' %}">
+                {% csrf_token %}
+                    <select class="form-select" id="asset" name="asset">
+                        {% for asset in assets %}
+                            <option value="{{ asset.id}}">{{ asset.ticker }}</option>
+                        {% endfor %}
+                    </select> 
+                    <div class="mt-4">
+                        <button class="btn mx-auto d-block" style="background-color: #f3f3f3; color: #315030; border: none;">Search</button>
+                    </div>
+                </form>
+        </div>
+    </div>
+</div>
 
 {% endblock %}

@@ -1,47 +1,78 @@
 {% extends 'base.html' %}
 {% block content %}
-{% if message %}
-    <p style="color: green;">{{ message }}</p>
-{% endif %}
-<form method="POST" action="{% url 'configure' %}">
-    {% csrf_token %}
-    <br> 
-    <br> 
-    <div class="mb-3"> 
-        Ticker: <input type="text" name="ticker" value="{{ ticker }}">
+<div class="container mt-4">
+    {% if message %}
+        <div class="alert alert-success">{{ message }}</div>
+    {% endif %}
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-4" style="background-color: #315030; color: #f1f1f1;">
+                <div class="card-body">
+                    <h4 class="text-center font-weight-bold" style="color:#f1f1f1; ;">Insert a new asset at your list</h4>
+                    <form method="POST" action="{% url 'configure' %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label>Ticker</label>
+                            <input type="text" class="form-control" id="ticker" name="ticker" value="{{ ticker }}">
+                        </div>
+                        <div class="mb-3">
+                            <label>Interval (minutes)</label>
+                            <input type="number" class="form-control" id="interval" name="interval" value="{{ interval }}">
+                        </div>
+                        <div class="mb-3">
+                            <label>Upper Limit</label>
+                            <input type="text" class="form-control" id="upperLimit" name="upperLimit" value="{{ upperLimit }}">
+                            <small style="color:#9bcc99;">
+                                Obs: For static, it's the absolute upper limit.<br>
+                                Obs: For dynamic synchronous and asynchronous, it's the relative upper limit (i.e., how much higher than the last price it can be).
+                            </small>
+                        </div>
+                        <div class="mb-3">
+                            <label>Lower Limit</label>
+                            <input type="text" class="form-control" id="lowerLimit" name="lowerLimit" value="{{ lowerLimit }}">
+                            <small style="color:#9bcc99;">
+                                Obs: For static, it's the absolute lower limit.<br>
+                                Obs: For dynamic synchronous and asynchronous, it's the relative lower limit (i.e., how much lower than the last price it can be).
+                            </small>
+                        </div>
+                        <div class="mb-3">
+                            <label>Tunnel Type</label>
+                            <select class="form-select" id="tunnelType" name="tunnelType">
+                                <option value="static" {% if tunnelType == 'static' %}selected{% endif %}>Static</option>
+                                <option value="sync" {% if tunnelType == 'sync' %}selected{% endif %}>Dynamic Synchronous</option>
+                                <option value="async" {% if tunnelType == 'async' %}selected{% endif %}>Dynamic Asynchronous (Calculation based on last day history)</option>
+                            </select>
+                        </div>
+                        <div class="text-center">
+                            <button class="btn mx-auto d-block" style="background-color: #f3f3f3; color: #315030; border: none;">Save asset to your list</button>
+                        </div>
+                        <input type="hidden" name="action" value="SAVE">
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card mb-4" style="background-color: #d68a3c; color: #f1f1f1; height: 642px; width: 640px;"> 
+                <div class="card-body">               
+                    <h4 class="text-center font-weight-bold" style="color:#f1f1f1;;">Delete an Asset From Your List</h4>
+                    <form method="POST" action="{% url 'configure' %}">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                            Select an asset: 
+                            <select class="form-control" id="assetDel" name="assetDel">
+                                {% for asset in assets %}
+                                    <option value="{{ asset.id}}">{{ asset.ticker }}</option>
+                                {% endfor %}
+                            </select> 
+                            </div>
+                            <div class="text-center mb-3">
+                                <button class="btn mx-auto d-block" style="background-color: #f1f1f1; color: #bf6b17; border: none;">Delete asset from your list</button>
+                            </div>
+                            <input type="hidden" name="action" value="DELETE">
+                     </form>
+                </div>
+            </div>
+        </div>
     </div>
-    <br> 
-    
-    <div class="mb-3">
-        Interval (minutes) <input type="number" name="interval" value="{{ interval }}">
-    </div>
-    <br> 
-    
-    <div class="mb-3">
-        Upper Limit <input type="text"  name="upperLimit" value="{{ upperLimit }}">
-        <div>&emsp;&emsp;Obs: For static it's the absolute upper limit</div>
-        <div>&emsp;&emsp;Obs: For dynamic synchronous and asynchronous it's the relative upper limite (i.e. how much from the last price it can be higher)</div>
-    </div>
-    <br> 
-
-    <div class="mb-3">
-        Lower Limit: <input type="text"  name="lowerLimit" value="{{ lowerLimit }}">
-        <div>&emsp;&emsp;Obs: For static it's the absolute lower limit</div>
-        <div>&emsp;&emsp;Obs: For dynamic synchronous and asynchronous it's the relative lower limite (i.e. how much from the last price it can be higher)</div>
-    </div>
-    <br> 
-
-    <div class="mb-3">
-        Tunnel type: 
-        <select name="tunnelType">
-            <option value="static" {% if tunnelType == 'static' %}selected{% endif %}>Static</option>
-            <option value="sync"   {% if tunnelType == 'sync' %}selected{% endif %}>Dynamic Synchronous</option>
-            <option value="async"  {% if tunnelType == 'async' %}selected{% endif %}>Dynamic Asynchronous (Calcualtion based on last day history)</option>
-        </select>
-    </div>
-    <br> 
-    
-    <button type="submit">Save asset to your list</button>
-</form>
-
+</div>
 {% endblock %}

@@ -50,9 +50,11 @@ def AssetChecker(asset_id):
         print("Sync up: " + str(syncUpper))
         print("Sync up: " + str(syncLower))
         if   assetPrice > syncUpper:
-            pass #EMAIL DE VENDA
+            message = "Dear User, your saved asset " + asset.ticker + " has a great sales opportunity, it last price was: " + str(assetPrice) + " BRL, overtaking the synchronous dynamic upper limit of " + str(asset.upperLimit) + " BRL"
+            send_mail(("InvestTrackerWeb - SELLING OPPORTUNITY FOR " + asset.ticker), message, EMAIL_HOST_USER, recipient_list=[useremail], fail_silently=True, )
         elif assetPrice < syncLower:
-            pass #EMAIL DE COMPRA
+            message = "Dear User, your saved asset " + asset.ticker + " has a great buying opportunity, it last price was: " + str(assetPrice) + " BRL, smaller thant the synchronous dynamic lower limit of " + str(asset.lowerLimit) + " BRL"
+            send_mail(("InvestTrackerWeb - BUYING OPPORTUNITY FOR " + asset.ticker), message, EMAIL_HOST_USER, recipient_list=[useremail], fail_silently=True, )
 
 
     elif   asset.tunnelType == 'async':
@@ -61,9 +63,11 @@ def AssetChecker(asset_id):
         print("Async up: " + str(asyncUpper))
         print("Async up: " + str(asyncLower))
         if   assetPrice > asyncUpper:
-            pass #EMAIL DE VENDA
+            message = "Dear User, your saved asset " + asset.ticker + " has a great sales opportunity, it last price was: " + str(assetPrice) + " BRL, overtaking the asynchronous dynamic upper limit of " + str(asset.upperLimit) + " BRL"
+            send_mail(("InvestTrackerWeb - SELLING OPPORTUNITY FOR " + asset.ticker), message, EMAIL_HOST_USER, recipient_list=[useremail], fail_silently=True, )
         elif assetPrice < asyncLower:
-            pass #EMAIL DE COMPRA
+            message = "Dear User, your saved asset " + asset.ticker + " has a great buying opportunity, it last price was: " + str(assetPrice) + " BRL, smaller thant the asynchronous dynamic lower limit of " + str(asset.lowerLimit) + " BRL"
+            send_mail(("InvestTrackerWeb - BUYING OPPORTUNITY FOR " + asset.ticker), message, EMAIL_HOST_USER, recipient_list=[useremail], fail_silently=True, )
 
 
     return "task complete" + str(dataAsset['Close'].iloc[-1])

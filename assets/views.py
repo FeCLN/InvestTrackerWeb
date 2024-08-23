@@ -6,6 +6,7 @@ from .models import Asset, AssetHistory
 from decimal import Decimal
 from django.utils import timezone
 from datetime import timedelta
+import pandas as pd
 
 from django_celery_beat.models import PeriodicTask, IntervalSchedule
 
@@ -18,10 +19,12 @@ def checkAssets(request):
         assetSelected = Asset.objects.get(id=assetID)
 
         graph_html, dataAsset = searchAsset(assetSelected.ticker)
+        
 
         # PLOT ASSET HISTORY
 
         history = AssetHistory.objects.filter(asset=assetSelected).order_by('timestamp')[:500]
+        lastHistory = AssetHistory.objects.filter(asset=assetSelected).order_by('timestamp').last()
         
         timestamps   = [record.timestamp  for record in history]
         open_prices  = [record.openPrice  for record in history]
@@ -52,12 +55,14 @@ def checkAssets(request):
                 'ticker': assetSelected.ticker,
                 'data': dataAsset.iloc[-1],
                 'graph_html': graph_html,
-                'graph_history_html': graph_history_html
+                'graph_history_html': graph_history_html,
+                'interval' : assetSelected.interval,
+                'dataHistory' : lastHistory
             }
         else:
             context = {
                 'ticker': assetSelected.ticker,
-                'error': "No data found for this symbol."
+                'message': "No data found for this symbol."
             }
         return render(request, 'check/checkResult.html', context)
 
@@ -73,52 +78,71 @@ def checkAssets(request):
 
 ##########################################################################
 def configureAssets(request):
+    assetsAll = Asset.objects.all()
     if request.method == 'POST':
+        if request.POST.get('action') == "SAVE":
+            #GET INPUT DATA:
+            tickerB3   = request.POST.get('ticker')
+            interval   = request.POST.get('interval')
+            upperLimit = request.POST.get('upperLimit')
+            lowerLimit = request.POST.get('lowerLimit')
+            tunnelType = request.POST.get('tunnelType')
 
-        #GET INPUT DATA:
-        tickerB3   = request.POST.get('ticker')
-        interval   = request.POST.get('interval')
-        upperLimit = request.POST.get('upperLimit')
-        lowerLimit = request.POST.get('lowerLimit')
-        tunnelType = request.POST.get('tunnelType')
 
+            #CREATE NEW ASSET OBJECT
+            newAsset = Asset()
+            newAsset.user = request.user
 
-        #CREATE NEW ASSET OBJECT
-        newAsset = Asset()
-        newAsset.user = request.user
+            #CHECK IF DATA EXISTS
+            if tickerB3 and interval and upperLimit and lowerLimit:
 
-        #CHECK IF DATA EXISTS
-        if tickerB3 and interval and upperLimit and lowerLimit:
+                #SAVE NEW ASSET
+                newAsset.ticker     =         tickerB3
+                newAsset.interval   =     int(interval)
+                newAsset.upperLimit = Decimal(upperLimit)
+                newAsset.lowerLimit = Decimal(lowerLimit)
+                newAsset.tunnelType =         tunnelType
+                newAsset.save()
 
-            #SAVE NEW ASSET
-            newAsset.ticker     =         tickerB3
-            newAsset.interval   =     int(interval)
-            newAsset.upperLimit = Decimal(upperLimit)
-            newAsset.lowerLimit = Decimal(lowerLimit)
-            newAsset.tunnelType =         tunnelType
-            newAsset.save()
+                #CREATE SCHEDULE TASK
+                interval, _ = IntervalSchedule.objects.get_or_create(every=newAsset.interval, period=IntervalSchedule.MINUTES)
+                PeriodicTask.objects.create(interval=interval, name=("schedule_" + tickerB3 + "_" + str(request.user.username)), task="assets.tasks.AssetChecker", args=[newAsset.id])
 
-            #CREATE SCHEDULE TASK
-            interval, _ = IntervalSchedule.objects.get_or_create(every=newAsset.interval, period=IntervalSchedule.SECONDS)
-            PeriodicTask.objects.create(interval=interval, name=("schedule_" + tickerB3 + "_" + str(request.user.username)), task="assets.tasks.AssetChecker", args=[newAsset.id])
-
-            #RETURN TO PAGE
-            context = {
-            'current_page': 'configure',
-            'message': 'Asset configured!',  
-            }
-            return render(request, 'configure/configure.html', context)
-        else:
-            context = {
-            'current_page': 'configure',
-            'message': 'Error, verify the information',  
-            }
-            return render(request, 'configure/configure.html', context)
+                #RETURN TO PAGE
+                assetsAll = Asset.objects.all()
+                context = {
+                'current_page': 'configure',
+                'message': 'Asset configured!',  
+                'assets' :  assetsAll
+                }
+                return render(request, 'configure/configure.html', context)
+            else:
+                context = {
+                'current_page': 'configure',
+                'message': 'Error, verify the information', 
+                'assets' :  assetsAll 
+                }
+                return render(request, 'configure/configure.html', context)
             
+        elif request.POST.get('action') == "DELETE":
+            assetDel_id = request.POST.get('assetDel')
+            assetDel = Asset.objects.get(id=assetDel_id)
+            PeriodicTask.objects.filter(name__contains=(assetDel.ticker + "_" + str(request.user.username))).delete()
+            assetDel.delete()
+
+            assetsAll = Asset.objects.all()
+            context = {
+                'current_page': 'configure',
+                'message': 'Asset deleted!',
+                'assets' :  assetsAll
+            }
+            return render(request, 'configure/configure.html', context)
+        
 
 
     context = {
-        'current_page': 'configure',  
+        'current_page': 'configure',
+        'assets' :  assetsAll
     }
     return render(request, 'configure/configure.html', context)
 ##########################################################################
@@ -159,6 +183,8 @@ def searchAsset(ticker):
     tickerHtml = ticker + ".SA"
     assetEntity = yf.Ticker(tickerHtml)
     dataAsset = assetEntity.history(period="1d", interval="1m")
+    
+    dataAsset.index = dataAsset.index - timedelta(hours=3)
 
     # Plot the data
     if 'Date' not in dataAsset.columns:
