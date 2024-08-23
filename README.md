@@ -21,13 +21,11 @@ The orange card retrieves a list from all your assets and allows it to be remove
 All the assets configured here will notify the User by email (the email configured at registration) when an asset reaches a tunnel border, recommending to the user to buy, if it reach the lower border or to sell it, when it reach the upper border.
 <img src="coreApp/static/config.png"/>
 
-The **Check your Assets** page allows you to retrieve all the information
+The **Check your Assets** page allows you to retrieve all the information from your configured assets, by selecting it from the drop down menu.
 <img src="coreApp/static/check.png"/>
 
-
+And them is displayed the information as in the search system, but it's displayed the data stored for this asset in the system database, and show a iterative graph and the last data stored by the system in the polling interval.
 <img src="coreApp/static/checkres.png"/>
-
-
 
 
 
