@@ -7,8 +7,9 @@
             <span class="navbar-toggler-icon"></span>
         </button>
 
-        
-        <img src="../static/logo.jpeg" width="85" height="85">
+        {% load static %}
+
+        <img src="{% static 'logo.jpeg' %}" width="85" height="85" alt="Logo">
         <a class="navbar-brand" href="#"><strong>InvestTrackerWeb</strong></a>
 
         <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
