@@ -42,24 +42,25 @@ To execute this system you need to have installed:
 ## How to execute
 To run the project open three different terminals and in each one execute each of the following commands.
 
-1. **Run django server**
+1. **Insert the email and password for the server**
+```bash
+python3 emailRegister.py
+```
+
+2. **Run django server**
 ```bash
 python3 manage.py runserver
 ```
 
-2. **Run celery beat**
+3. **Run celery beat**
 ```bash
 celery -A InvestTrackerWeb beat --scheduler django_celery_beat.schedulers:DatabaseScheduler
 ```
 
-3. **Run celery worker**
+4. **Run celery worker**
 ```bash
 celery -A InvestTrackerWeb worker --loglevel=info
 ```
 
-3. **Insert the email and password for the server**
-```bash
-python3 emailRegister.py
-```
 
 Open the link "http://127.0.0.1:8000/" in your browser.
